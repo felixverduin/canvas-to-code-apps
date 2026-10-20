@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Canvas App or Code App Decision Tree</title>
+    <style>
+      :root {
+        color-scheme: light;
+        --ink: #17342f;
+        --muted: #607c75;
+        --paper: #fffdf8;
+        --canvas: #f4f0e7;
+        --brand: #075e54;
+        --brand-strong: #064d45;
+        --brand-soft: #e7f2ed;
+        --lime: #c8f049;
+        --line: #d8ded6;
+        --accent: #ff775f;
+        --blue: #345a8a;
+        --gold: #f3c850;
+        --shadow: 0 18px 50px rgb(23 52 47 / 12%);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        background: var(--canvas);
+        color: var(--ink);
+        font-family:
+          Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.5;
+      }
+
+      main {
+        width: min(1180px, calc(100% - 32px));
+        margin: 32px auto 56px;
+      }
+
+      .page {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: var(--paper);
+        box-shadow: var(--shadow);
+      }
+
+      header {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 24px;
+        align-items: start;
+        background: var(--brand);
+        color: white;
+        padding: 30px;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: #bde5da;
+        font-size: 12px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      h1 {
+        max-width: 840px;
+        margin-bottom: 16px;
+        font-size: clamp(32px, 5vw, 52px);
+        line-height: 1.04;
+        letter-spacing: 0;
+      }
+
+      h2 {
+        margin-bottom: 10px;
+        font-size: 20px;
+      }
+
+      h3 {
+        margin-bottom: 6px;
+        font-size: 16px;
+      }
+
+      .summary {
+        max-width: 780px;
+        margin-bottom: 0;
+        color: #e8fff8;
+        font-size: 17px;
+      }
+
+      .score-card {
+        min-width: 220px;
+        border: 1px solid rgb(255 255 255 / 22%);
+        border-radius: 8px;
+        background: rgb(255 255 255 / 10%);
+        padding: 16px;
+      }
+
+      .score-card strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--lime);
+        font-size: 28px;
+        line-height: 1;
+      }
+
+      .score-card span {
+        color: #e8fff8;
+        font-size: 14px;
+      }
+
+      .content {
+        display: grid;
+        grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+        gap: 20px;
+        padding: 24px;
+      }
+
+      .decision-panel,
+      .side-panel,
+      .question,
+      .reference,
+      .summary-strip {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        background: white;
+      }
+
+      .decision-panel,
+      .side-panel {
+        padding: 18px;
+      }
+
+      .summary-strip {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 1px;
+        overflow: hidden;
+        background: var(--line);
+        margin-bottom: 16px;
+      }
+
+      .summary-item {
+        background: white;
+        padding: 14px;
+      }
+
+      .summary-item strong {
+        display: block;
+        color: var(--brand);
+      }
+
+      .summary-item span {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .question-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .question {
+        padding: 16px;
+      }
+
+      .question-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+
+      .question p,
+      .side-panel p,
+      .reference p,
+      .result-body,
+      .explanation {
+        color: var(--muted);
+      }
+
+      .question p {
+        margin-bottom: 0;
+      }
+
+      .number {
+        display: inline-grid;
+        min-width: 30px;
+        height: 30px;
+        place-items: center;
+        border-radius: 6px;
+        background: var(--brand-soft);
+        color: var(--brand);
+        font-weight: 900;
+      }
+
+      .prompt {
+        flex: 1;
+      }
+
+      .prompt h3 {
+        margin-bottom: 4px;
+      }
+
+      .choices {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      button {
+        min-height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        background: white;
+        color: var(--ink);
+        cursor: pointer;
+        font: inherit;
+        font-weight: 800;
+      }
+
+      button:hover {
+        border-color: var(--brand);
+      }
+
+      button.selected {
+        border-color: var(--brand);
+        background: var(--brand);
+        color: white;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .actions button {
+        padding: 0 14px;
+      }
+
+      .actions .secondary {
+        border-color: #ffd2c7;
+        background: #fff4ee;
+        color: #93402d;
+      }
+
+      .result {
+        display: grid;
+        gap: 12px;
+      }
+
+      .recommendation {
+        border-radius: 8px;
+        padding: 18px;
+        background: var(--brand-soft);
+      }
+
+      .recommendation.code {
+        background: #eef3fb;
+      }
+
+      .recommendation.canvas {
+        background: var(--brand-soft);
+      }
+
+      .recommendation.mixed {
+        background: #fff7da;
+      }
+
+      .recommendation .label {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: var(--brand);
+        color: white;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      .recommendation.code .label {
+        background: var(--blue);
+      }
+
+      .recommendation.mixed .label {
+        background: #8f6b00;
+      }
+
+      .recommendation h2 {
+        margin: 12px 0 8px;
+        font-size: 26px;
+      }
+
+      .meter {
+        display: grid;
+        gap: 8px;
+      }
+
+      .meter-row {
+        display: grid;
+        grid-template-columns: 88px minmax(0, 1fr) 34px;
+        gap: 8px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .bar {
+        overflow: hidden;
+        height: 12px;
+        border-radius: 999px;
+        background: var(--brand-soft);
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--brand);
+      }
+
+      .bar.code span {
+        background: var(--blue);
+      }
+
+      .reasons {
+        display: grid;
+        gap: 8px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .reasons li {
+        border: 1px solid var(--line);
+        border-radius: 6px;
+        padding: 10px;
+        color: var(--muted);
+      }
+
+      .reasons strong {
+        color: var(--ink);
+      }
+
+      .reference {
+        padding: 16px;
+      }
+
+      .reference + .reference {
+        margin-top: 12px;
+      }
+
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 12px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        border-radius: 999px;
+        padding: 4px 10px;
+        background: var(--brand-soft);
+        color: var(--brand);
+        font-size: 13px;
+        font-weight: 800;
+      }
+
+      .tag.code {
+        background: #eef3fb;
+        color: var(--blue);
+      }
+
+      .tag.warning {
+        background: #fff4ee;
+        color: #93402d;
+      }
+
+      a {
+        color: var(--brand);
+        font-weight: 800;
+      }
+
+      .source-list {
+        margin: 10px 0 0;
+        padding-left: 20px;
+        color: var(--muted);
+      }
+
+      .source-list li + li {
+        margin-top: 7px;
+      }
+
+      .source-list a {
+        overflow-wrap: anywhere;
+      }
+
+      @media (max-width: 920px) {
+        header,
+        .content,
+        .summary-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .score-card {
+          min-width: 0;
+        }
+      }
+
+      @media (max-width: 640px) {
+        main {
+          width: min(100% - 20px, 1180px);
+          margin-top: 20px;
+        }
+
+        header,
+        .content {
+          padding: 18px;
+        }
+
+        .choices {
+          grid-template-columns: 1fr;
+        }
+
+        .meter-row {
+          grid-template-columns: 72px minmax(0, 1fr) 28px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <article class="page">
+        <header>
+          <div>
+            <p class="eyebrow">Power Apps architecture decision</p>
+            <h1>Canvas App or Code App?</h1>
+            <p class="summary">
+              We'll walk you through whether to use a Canvas App or a Power Apps Code App.
+            </p>
+          </div>
+          <aside class="score-card" aria-label="Current recommendation score">
+            <strong id="topRecommendation">Start</strong>
+            <span id="topSummary">Answer the questions to see the strongest fit.</span>
+          </aside>
+        </header>
+
+        <div class="content">
+          <section class="decision-panel" aria-label="Decision tree">
+            <div class="question-list" id="questionList"></div>
+
+            <div class="actions">
+              <button type="button" id="reset">Reset answers</button>
+              <button type="button" id="canvasPreset">Try Canvas scenario</button>
+              <button type="button" id="codePreset">Try Code App scenario</button>
+            </div>
+          </section>
+
+          <aside class="side-panel" aria-label="Recommendation">
+            <div class="result" id="result"></div>
+          </aside>
+        </div>
+      </article>
+    </main>
+
+    <script>
+      const questions = [
+        {
+          id: "standardLicense",
+          title: "Do users need to run the app without Power Apps Premium?",
+          detail:
+            "Code Apps currently require Power Apps Premium for end users. If standard licensing is the requirement, choose Canvas App.",
+          canvas: 6,
+          code: 0,
+          yes: "Canvas App",
+          no: "Keep asking",
+        },
+        {
+          id: "normalMaker",
+          title: "Is the primary builder a normal maker rather than an advanced maker or developer?",
+          detail:
+            "A normal maker usually needs the Power Apps Studio experience, visual editing, and Power Fx rather than a local TypeScript toolchain.",
+          canvas: 5,
+          code: 0,
+          yes: "Canvas App",
+          no: "Keep asking",
+        },
+        {
+          id: "offline",
+          title: "Is offline capability a real requirement?",
+          detail:
+            "Canvas Apps have documented mobile offline support. Code Apps have current host and mobile limitations, so offline pushes this decision to Canvas.",
+          canvas: 6,
+          code: 0,
+          yes: "Canvas App",
+          no: "Keep asking",
+        },
+        {
+          id: "canvasHost",
+          title: "Do you need Power Apps for Windows, SharePoint forms, or Power BI integration functions?",
+          detail:
+            "These are called out as current Code Apps limitations. Choose Canvas App when the host integration is mandatory.",
+          canvas: 5,
+          code: 0,
+          yes: "Canvas App",
+          no: "Keep asking",
+        },
+        {
+          id: "simpleBusinessLed",
+          title: "Is this a simple business-led app that benefits from rapid visual iteration?",
+          detail:
+            "Straightforward forms, approvals, and team productivity apps usually fit Canvas Apps well, especially when the maker owns changes.",
+          canvas: 3,
+          code: 1,
+          yes: "Canvas App",
+          no: "Keep asking",
+        },
+        {
+          id: "complexUx",
+          title: "Will the app grow into a complex custom UI or UX?",
+          detail:
+            "Responsive layouts, precise overlays on buttons, custom animation, advanced components, and polished web behavior are common reasons to choose Code Apps.",
+          canvas: 0,
+          code: 5,
+          yes: "Code App",
+          no: "Keep asking",
+        },
+        {
+          id: "proDevOwnership",
+          title: "Do you have enough advanced maker or developer support for the app?",
+          detail:
+            "Code Apps use a local web development workflow, so the team needs enough support for TypeScript, packages, build tools, and reviewable code.",
+          canvas: 0,
+          code: 4,
+          yes: "Code App",
+          no: "Canvas App",
+        },
+      ]
+
+      const answers = {}
+
+      function getScores() {
+        return questions.reduce(
+          (scores, question) => {
+            if (answers[question.id] === "yes") {
+              scores.canvas += question.canvas
+              scores.code += question.code
+            }
+
+            return scores
+          },
+          { canvas: 0, code: 0 },
+        )
+      }
+
+      function getAnsweredQuestions() {
+        return questions.filter((question) => answers[question.id] === "yes")
+      }
+
+      function getRecommendation(scores) {
+        const answered = getAnsweredQuestions()
+
+        if (!answered.length) {
+          return {
+            kind: "mixed",
+            label: "Start",
+            title: "Answer the decision questions",
+            body:
+              "The best first step is to eliminate hard constraints: licensing, maker skill, offline needs, and required Power Apps host integrations.",
+          }
+        }
+
+        if (scores.canvas >= scores.code + 3) {
+          return {
+            kind: "canvas",
+            label: "Recommended",
+            title: "Build a Canvas App",
+            body:
+              "The answers point to low-code maker ownership, standard licensing pressure, offline/mobile needs, or host features that Canvas Apps support better today.",
+          }
+        }
+
+        if (scores.code >= scores.canvas + 3) {
+          return {
+            kind: "code",
+            label: "Recommended",
+            title: "Build a Code App",
+            body:
+              "The answers point to a developer-led solution with custom UX, modern web architecture, higher maintainability expectations, or stronger refactoring needs.",
+          }
+        }
+
+        return {
+          kind: "mixed",
+          label: "Review",
+          title: "Either can work, decide by ownership",
+          body:
+            "The scores are close. Choose Canvas when makers must own the app day to day. Choose Code Apps when a developer workflow and custom UI control are worth the extra responsibility.",
+        }
+      }
+
+      function renderQuestions() {
+        const host = document.getElementById("questionList")
+        host.innerHTML = ""
+
+        questions.forEach((question, index) => {
+          const section = document.createElement("section")
+          section.className = "question"
+
+          const head = document.createElement("div")
+          head.className = "question-head"
+          head.innerHTML = `
+            <span class="number">${index + 1}</span>
+            <div class="prompt">
+              <h3>${question.title}</h3>
+              <p>${question.detail}</p>
+            </div>
+          `
+
+          const choices = document.createElement("div")
+          choices.className = "choices"
+
+          const yes = document.createElement("button")
+          yes.type = "button"
+          yes.textContent = `Yes: ${question.yes}`
+          yes.className = answers[question.id] === "yes" ? "selected" : ""
+          yes.addEventListener("click", () => {
+            answers[question.id] = answers[question.id] === "yes" ? undefined : "yes"
+            render()
+          })
+
+          const no = document.createElement("button")
+          no.type = "button"
+          no.textContent = `No: ${question.no}`
+          no.className = answers[question.id] === "no" ? "selected" : ""
+          no.addEventListener("click", () => {
+            answers[question.id] = answers[question.id] === "no" ? undefined : "no"
+            render()
+          })
+
+          choices.append(yes, no)
+          section.append(head, choices)
+          host.append(section)
+        })
+      }
+
+      function renderResult() {
+        const scores = getScores()
+        const recommendation = getRecommendation(scores)
+        const maxScore = Math.max(scores.canvas, scores.code, 1)
+        const answered = getAnsweredQuestions()
+
+        document.getElementById("topRecommendation").textContent = recommendation.title.replace(
+          "Build a ",
+          "",
+        )
+        document.getElementById("topSummary").textContent = `${scores.canvas} Canvas points, ${scores.code} Code App points`
+
+        document.getElementById("result").innerHTML = `
+          <div class="recommendation ${recommendation.kind}">
+            <span class="label">${recommendation.label}</span>
+            <h2>${recommendation.title}</h2>
+            <div class="result-body">${recommendation.body}</div>
+          </div>
+
+          <div class="meter" aria-label="Decision score">
+            <div class="meter-row">
+              <strong>Canvas</strong>
+              <div class="bar"><span style="width: ${(scores.canvas / maxScore) * 100}%"></span></div>
+              <span>${scores.canvas}</span>
+            </div>
+            <div class="meter-row">
+              <strong>Code</strong>
+              <div class="bar code"><span style="width: ${(scores.code / maxScore) * 100}%"></span></div>
+              <span>${scores.code}</span>
+            </div>
+          </div>
+
+          <div>
+            <h2>Why this result?</h2>
+            <ul class="reasons">
+              ${
+                answered.length
+                  ? answered
+                      .map(
+                        (question) =>
+                          `<li><strong>${question.yes}:</strong> ${question.detail}</li>`,
+                      )
+                      .join("")
+                  : `<li><strong>No answers yet:</strong> Start with licensing and maker ownership.</li>`
+              }
+            </ul>
+          </div>
+
+          <div class="reference">
+            <h2>Interpretation</h2>
+            <p>
+              Code Apps are powerful, but maker skill, security, maintainability, licensing,
+              mobile support, and platform limitations still decide the architecture.
+            </p>
+            <div class="tag-row">
+              <span class="tag">Canvas for makers</span>
+              <span class="tag">Canvas for offline</span>
+              <span class="tag warning">Canvas for standard license pressure</span>
+              <span class="tag code">Code Apps for custom UX</span>
+              <span class="tag code">Code Apps for developer ownership</span>
+            </div>
+          </div>
+
+          <div class="reference">
+            <h2>Sources</h2>
+            <ul class="source-list">
+              <li>
+                <a href="https://learn.microsoft.com/en-us/power-apps/developer/code-apps/overview">
+                  Microsoft Learn: Power Apps code apps overview
+                </a>
+                - Code Apps features, Premium licensing requirement, prerequisites, and current
+                limitations.
+              </li>
+              <li>
+                <a href="https://learn.microsoft.com/en-us/power-apps/maker/canvas-apps/offline-apps">
+                  Microsoft Learn: Develop offline-capable canvas apps
+                </a>
+                - Canvas App offline support and offline limitations.
+              </li>
+            </ul>
+          </div>
+        `
+      }
+
+      function render() {
+        renderQuestions()
+        renderResult()
+      }
+
+      document.getElementById("reset").addEventListener("click", () => {
+        Object.keys(answers).forEach((key) => delete answers[key])
+        render()
+      })
+
+      document.getElementById("canvasPreset").addEventListener("click", () => {
+        Object.keys(answers).forEach((key) => delete answers[key])
+        answers.standardLicense = "yes"
+        answers.normalMaker = "yes"
+        answers.offline = "yes"
+        answers.simpleBusinessLed = "yes"
+        render()
+      })
+
+      document.getElementById("codePreset").addEventListener("click", () => {
+        Object.keys(answers).forEach((key) => delete answers[key])
+        answers.complexUx = "yes"
+        answers.proDevOwnership = "yes"
+        render()
+      })
+
+      render()
+    </script>
+  </body>
+</html>
