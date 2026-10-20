@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "appId": "e145da95-a779-41ef-b7c8-ef1a9039a43f",
+  "appDisplayName": "Customer Spotlight",
+  "region": "prod",
+  "appType": "CodeApp",
+  "environmentId": "b4cd07a8-04cf-e6f2-8ad2-70f670e0b441",
+  "description": " ",
+  "buildPath": "./dist",
+  "buildEntryPoint": "index.html",
+  "localAppUrl": "http://localhost:3000",
+  "logoPath": "Default",
+  "connectionReferences": {},
+  "databaseReferences": {
+    "default.cds": {
+      "dataSources": {
+        "users": {
+          "entitySetName": "systemusers",
+          "logicalName": "systemuser",
+          "isHidden": false
+        }
+      },
+      "environmentVariableName": ""
+    }
+  }
+}
