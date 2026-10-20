@@ -1,0 +1,84 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes logo-dash {
+  from {
+    translate: min(-8vw, -20px) 0;
+  }
+  to {
+    translate: max(8vw, 20px) 0;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .logo {
+    animation:
+      logo-spin infinite 0.4s linear,
+      logo-dash infinite 0.3s ease-in-out alternate;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.users-section {
+  margin-top: 3rem;
+  text-align: left;
+  border-top: 1px solid #8886;
+  padding-top: 1.5rem;
+}
+
+.users-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.users-heading h2 { margin: 0; }
+.users-heading p { margin: .5rem 0; }
+.users-table-wrapper { max-width: 100%; overflow-x: auto; }
+.users-table { width: 100%; border-collapse: collapse; }
+.users-table th, .users-table td {
+  padding: .8rem;
+  border-bottom: 1px solid #8886;
+  text-align: left;
+  overflow-wrap: anywhere;
+  min-width: 7rem;
+}
+.users-table thead { background: #8882; }
+.users-error { padding: 1rem; border: 1px solid #c95f5f; border-radius: 8px; }
+.load-more { margin-top: 1rem; }
+.users-section button:disabled { opacity: .6; cursor: wait; }
