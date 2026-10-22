@@ -39,8 +39,8 @@
 @media (prefers-reduced-motion: no-preference) {
   .logo {
     animation:
-      logo-spin infinite 0.4s linear,
-      logo-dash infinite 0.3s ease-in-out alternate;
+      logo-spin infinite 2.4s linear,
+      logo-dash infinite 2.3s ease-in-out alternate;
   }
 }
 
